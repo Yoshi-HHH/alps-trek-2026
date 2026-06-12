@@ -1,0 +1,1197 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>北アルプス縦走計画 2025</title>
+<style>
+  :root {
+    --ink:     #1c2333;
+    --slate:   #3d4f6e;
+    --mist:    #8a9bb5;
+    --snow:    #f4f6fa;
+    --white:   #ffffff;
+    --peak:    #2c5f8a;
+    --ridge:   #4a8ab5;
+    --danger:  #c0392b;
+    --safe:    #27774a;
+    --caution: #b07d10;
+    --plan-a:  #2c5f8a;
+    --plan-b:  #27774a;
+    --plan-c:  #b07d10;
+    --radius:  12px;
+    --radius-sm: 7px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Noto Sans JP", sans-serif;
+    background: var(--snow);
+    color: var(--ink);
+    font-size: 15px;
+    line-height: 1.6;
+    max-width: 480px;
+    margin: 0 auto;
+    padding-bottom: 40px;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    background: linear-gradient(175deg, #1c2b42 0%, #243650 55%, #2c5f8a 100%);
+    padding: 36px 20px 28px;
+    color: #fff;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: "";
+    position: absolute;
+    bottom: -1px;
+    left: 0; right: 0;
+    height: 28px;
+    background: var(--snow);
+    clip-path: ellipse(55% 100% at 50% 100%);
+  }
+  .hero-eyebrow {
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #8bbcd6;
+    margin-bottom: 10px;
+  }
+  .hero-title {
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 1.25;
+    margin-bottom: 6px;
+  }
+  .hero-sub {
+    font-size: 13px;
+    color: #a8c4d8;
+    margin-bottom: 20px;
+  }
+  .hero-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+  .chip {
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 12px;
+    color: #d6e8f4;
+  }
+  .lang-toggle {
+    position: absolute;
+    top: 18px;
+    right: 16px;
+    display: flex;
+    background: rgba(255,255,255,0.12);
+    border-radius: 20px;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.2);
+  }
+  .lang-btn {
+    padding: 5px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    color: rgba(255,255,255,0.6);
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+    background: none;
+  }
+  .lang-btn.active {
+    background: rgba(255,255,255,0.25);
+    color: #fff;
+    border-radius: 18px;
+  }
+
+  /* ── ALERT ── */
+  .alert {
+    margin: 16px 16px 0;
+    background: #fdecea;
+    border-left: 4px solid var(--danger);
+    border-radius: var(--radius-sm);
+    padding: 12px 14px;
+    font-size: 13px;
+    color: #7b1a13;
+    line-height: 1.55;
+  }
+  .alert-icon { margin-right: 4px; }
+
+  /* ── SECTION ── */
+  .section {
+    margin: 20px 16px 0;
+  }
+  .section-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--mist);
+    margin-bottom: 10px;
+    padding-left: 2px;
+  }
+
+  /* ── PLAN TABS ── */
+  .plan-tabs {
+    display: flex;
+    gap: 8px;
+    margin: 20px 16px 0;
+  }
+  .plan-tab {
+    flex: 1;
+    padding: 10px 6px;
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    font-weight: 700;
+    text-align: center;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: all 0.2s;
+    background: var(--white);
+    color: var(--mist);
+    border-color: #dce3ed;
+  }
+  .plan-tab .tab-label { display: block; font-size: 11px; font-weight: 400; margin-top: 1px; }
+  .plan-tab.active-a { background: #e8f2fa; color: var(--plan-a); border-color: var(--plan-a); }
+  .plan-tab.active-b { background: #e6f4ed; color: var(--plan-b); border-color: var(--plan-b); }
+  .plan-tab.active-c { background: #fdf3e0; color: var(--plan-c); border-color: var(--plan-c); }
+
+  /* ── PLAN CONTENT ── */
+  .plan-content { display: none; }
+  .plan-content.visible { display: block; }
+
+  /* ── DAY CARDS ── */
+  .day-list { display: flex; flex-direction: column; gap: 10px; }
+  .day-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+  }
+  .day-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--snow);
+  }
+  .day-badge {
+    min-width: 42px;
+    text-align: center;
+    background: var(--peak);
+    color: #fff;
+    border-radius: 8px;
+    padding: 4px 6px;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1.3;
+  }
+  .day-badge.common { background: #6b7fa0; }
+  .day-badge.travel { background: var(--mist); }
+  .day-title { font-size: 14px; font-weight: 700; color: var(--ink); line-height: 1.3; }
+  .day-sub { font-size: 12px; color: var(--mist); margin-top: 1px; }
+  .day-body { padding: 10px 14px; display: flex; flex-direction: column; gap: 7px; }
+
+  .info-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 13px;
+  }
+  .info-row .ir-label {
+    min-width: 60px;
+    font-size: 11px;
+    color: var(--mist);
+    font-weight: 600;
+    padding-top: 1px;
+  }
+  .info-row .ir-value { color: var(--ink); flex: 1; }
+  .depart-value { color: var(--danger); font-weight: 700; font-size: 15px; }
+  .common-tag {
+    display: inline-block;
+    background: #eef1f7;
+    color: var(--mist);
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 10px;
+    margin-left: 6px;
+    vertical-align: middle;
+  }
+
+  /* ── DECISION TREE ── */
+  .decision-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+  }
+  .decision-hub {
+    background: var(--peak);
+    color: #fff;
+    padding: 14px 16px;
+    text-align: center;
+  }
+  .decision-hub .dh-title { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+  .decision-hub .dh-sub { font-size: 12px; color: #a8c8e0; }
+  .decision-arrow { text-align: center; padding: 8px; font-size: 18px; color: var(--mist); }
+  .decision-branches { display: flex; flex-direction: column; gap: 1px; background: var(--snow); }
+  .branch-row {
+    background: var(--white);
+    padding: 14px 16px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .branch-dot {
+    min-width: 28px; height: 28px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700; color: #fff;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .dot-a { background: var(--plan-a); }
+  .dot-b { background: var(--plan-b); }
+  .dot-c { background: var(--plan-c); }
+  .dot-x { background: var(--danger); }
+  .branch-text { flex: 1; }
+  .branch-plan { font-size: 13px; font-weight: 700; margin-bottom: 3px; }
+  .branch-cond { font-size: 12px; color: var(--slate); line-height: 1.5; }
+  .text-a { color: var(--plan-a); }
+  .text-b { color: var(--plan-b); }
+  .text-c { color: var(--plan-c); }
+  .text-x { color: var(--danger); }
+
+  /* ── NOTES ── */
+  .note-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+    margin-bottom: 10px;
+  }
+  .note-header {
+    display: flex; align-items: center; gap: 10px;
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--snow);
+    cursor: pointer;
+    user-select: none;
+  }
+  .note-tag {
+    font-size: 10px; font-weight: 700;
+    padding: 3px 9px; border-radius: 10px; color: #fff;
+    white-space: nowrap;
+  }
+  .tag-all { background: var(--slate); }
+  .tag-a   { background: var(--plan-a); }
+  .tag-b   { background: var(--plan-b); }
+  .tag-c   { background: var(--plan-c); }
+  .tag-warn { background: var(--danger); }
+  .note-title { font-size: 13px; font-weight: 700; flex: 1; }
+  .note-chevron { font-size: 12px; color: var(--mist); transition: transform 0.2s; }
+  .note-header.open .note-chevron { transform: rotate(180deg); }
+  .note-body { padding: 12px 14px; display: none; }
+  .note-body.open { display: block; }
+  .note-body ul { padding-left: 0; list-style: none; }
+  .note-body li {
+    font-size: 13px; color: var(--slate); line-height: 1.6;
+    padding: 5px 0 5px 18px;
+    border-bottom: 1px solid var(--snow);
+    position: relative;
+  }
+  .note-body li:last-child { border-bottom: none; }
+  .note-body li::before { content: "▸"; position: absolute; left: 0; color: var(--ridge); }
+
+  /* ── GEAR ── */
+  .gear-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+    margin-bottom: 10px;
+  }
+  .gear-header {
+    padding: 11px 14px;
+    background: var(--ink);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+  }
+  .gear-item {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--snow);
+  }
+  .gear-item:last-child { border-bottom: none; }
+  .gear-name { font-size: 13px; font-weight: 600; flex: 1; }
+  .gear-note { font-size: 11px; color: var(--mist); margin-top: 2px; line-height: 1.4; }
+  .badge {
+    font-size: 10px; font-weight: 700;
+    padding: 2px 7px; border-radius: 8px;
+    white-space: nowrap; flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .badge-req  { background: #fdecea; color: var(--danger); }
+  .badge-rec  { background: #e8f2fa; color: var(--plan-a); }
+  .badge-opt  { background: #f0f2f6; color: var(--mist); }
+
+  /* ── EMERGENCY ── */
+  .emg-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+    margin-bottom: 10px;
+  }
+  .emg-header {
+    padding: 11px 14px;
+    background: var(--danger);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+  }
+  .emg-item {
+    display: flex; gap: 10px; align-items: flex-start;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--snow);
+    font-size: 13px;
+  }
+  .emg-item:last-child { border-bottom: none; }
+  .emg-label { min-width: 90px; color: var(--mist); font-size: 12px; }
+  .emg-value { font-weight: 600; color: var(--ink); }
+
+  /* ── NAV TABS ── */
+  .nav {
+    display: flex;
+    background: var(--white);
+    border-bottom: 1px solid #dce3ed;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+  .nav-btn {
+    flex: 1;
+    padding: 12px 4px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--mist);
+    text-align: center;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+    background: none;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+  }
+  .nav-btn .nav-icon { display: block; font-size: 16px; margin-bottom: 2px; }
+  .nav-btn.active { color: var(--peak); border-bottom-color: var(--peak); }
+
+  /* ── VIEWS ── */
+  .view { display: none; }
+  .view.active { display: block; }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-thumb { background: #c0cad8; border-radius: 2px; }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="lang-toggle">
+    <button class="lang-btn active" onclick="setLang('ja')" id="btn-ja">日本語</button>
+    <button class="lang-btn" onclick="setLang('en')" id="btn-en">EN</button>
+  </div>
+  <div class="hero-eyebrow" data-ja="Mountain Trekking Plan 2025" data-en="Mountain Trekking Plan 2025">Mountain Trekking Plan 2025</div>
+  <div class="hero-title" data-ja="北アルプス縦走" data-en="Northern Japan Alps Trek">北アルプス縦走</div>
+  <div class="hero-sub" data-ja="双六岳・槍ヶ岳・大キレット・北穂高岳" data-en="Sugoroku · Yarigatake · Daikiretto · Kitahodaka">双六岳・槍ヶ岳・大キレット・北穂高岳</div>
+  <div class="hero-chips">
+    <span class="chip" data-ja="7/30 – 8/3" data-en="Jul 30 – Aug 3">7/30 – 8/3</span>
+    <span class="chip" data-ja="2名・テント泊" data-en="2 people · Tent camping">2名・テント泊</span>
+    <span class="chip" data-ja="核心：大キレット" data-en="Crux: Daikiretto">核心：大キレット</span>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav class="nav">
+  <button class="nav-btn active" onclick="showView('plan')" id="nav-plan">
+    <span class="nav-icon">🗺</span>
+    <span data-ja="プラン" data-en="Plans">プラン</span>
+  </button>
+  <button class="nav-btn" onclick="showView('branch')" id="nav-branch">
+    <span class="nav-icon">⑃</span>
+    <span data-ja="分岐判断" data-en="Decision">分岐判断</span>
+  </button>
+  <button class="nav-btn" onclick="showView('notes')" id="nav-notes">
+    <span class="nav-icon">⚠️</span>
+    <span data-ja="注意事項" data-en="Notes">注意事項</span>
+  </button>
+  <button class="nav-btn" onclick="showView('gear')" id="nav-gear">
+    <span class="nav-icon">🎒</span>
+    <span data-ja="装備" data-en="Gear">装備</span>
+  </button>
+  <button class="nav-btn" onclick="showView('emg')" id="nav-emg">
+    <span class="nav-icon">🆘</span>
+    <span data-ja="緊急" data-en="Emergency">緊急</span>
+  </button>
+</nav>
+
+<!-- ════ VIEW: PLAN ════ -->
+<div class="view active" id="view-plan">
+
+  <div class="alert">
+    <span class="alert-icon">⚠️</span>
+    <span data-ja="大キレットを含む上級ルートです。天候・体調に応じてプランを切り替えてください。" data-en="This is an advanced route including Daikiretto. Switch plans based on weather and physical condition.">大キレットを含む上級ルートです。天候・体調に応じてプランを切り替えてください。</span>
+  </div>
+
+<div class="plan-tabs">
+    <div class="plan-tab active-a" onclick="showPlan('a')" id="tab-a">
+      Plan A<span class="tab-label" data-ja="大キレット縦走" data-en="Full Traverse">大キレット縦走</span>
+    </div>
+    <div class="plan-tab" onclick="showPlan('b')" id="tab-b">
+      Plan B<span class="tab-label" data-ja="槍沢エスケープ" data-en="Yarisawa Escape">槍沢エスケープ</span>
+    </div>
+    <div class="plan-tab" onclick="showPlan('c')" id="tab-c">
+      Plan C<span class="tab-label" data-ja="新穂高周回" data-en="Shinhodaka Loop">新穂高周回</span>
+    </div>
+  </div>
+
+  <!-- PLAN A -->
+  <div class="plan-content visible section" id="plan-a">
+  <div style="margin: 0 0 10px 0;">
+    <a href="https://www.yamareco.com/modules/yr_plan/code-QlZEWxfxSmef9ZeE-YD3GA" target="_blank"
+       style="display:flex; align-items:center; gap:10px; background:var(--white); border:1px solid #dce3ed; border-radius:10px; padding:11px 14px; text-decoration:none; box-shadow:0 1px 4px rgba(0,0,0,0.07);">
+      <span style="font-size:22px;">🗺</span>
+      <span>
+        <span style="display:block; font-size:13px; font-weight:700; color:var(--ink);" data-ja="ヤマレコ 登山計画を見る" data-en="View Route Plan on Yamareco">ヤマレコ 登山計画を見る</span>
+        <span style="display:block; font-size:11px; color:var(--mist);" data-ja="地図・GPSルート・標高グラフ" data-en="Map · GPS route · Elevation profile">地図・GPSルート・標高グラフ</span>
+      </span>
+      <span style="margin-left:auto; color:var(--mist); font-size:14px;">↗</span>
+    </a>
+  </div>
+  <div style="margin: 0 0 10px 0;">
+    <div style="border-radius:10px; overflow:hidden; box-shadow:0 1px 4px rgba(0,0,0,0.12); position:relative;">
+      <img src="map_plan_a.png"
+           alt="ルート地図 / Route Map"
+           style="width:100%; display:block;" />
+      <div style="position:absolute; bottom:0; left:0; right:0; background:linear-gradient(transparent, rgba(0,0,0,0.55)); padding:8px 12px;">
+        <span style="color:#fff; font-size:11px; font-weight:600;" data-ja="プランA ルート全体図（ヤマレコより）" data-en="Plan A Full Route Map (via Yamareco)">プランA ルート全体図（ヤマレコより）</span>
+      </div>
+    </div>
+  </div>
+    <div class="day-list">
+
+      <div class="day-card">
+        <div class="day-header">
+          <div class="day-badge travel">7/30</div>
+          <div>
+            <div class="day-title" data-ja="移動日" data-en="Travel Day">移動日</div>
+            <div class="day-sub" data-ja="わさび平小屋 泊（小屋）" data-en="Overnight at Wasabidaira Hut">わさび平小屋 泊（小屋）</div>
+          </div>
+        </div>
+        <div class="day-body">
+          <div class="info-row">
+            <span class="ir-label" data-ja="移動手段" data-en="Transport">移動手段</span>
+            <span class="ir-value" data-ja="マイカー → 沢渡駐車場 → バス" data-en="Car → Sawando parking → Bus">マイカー → 沢渡駐車場 → バス</span>
+          </div>
+          <div class="info-row">
+            <span class="ir-label" data-ja="バス" data-en="Bus">バス</span>
+            <span class="ir-value" data-ja="さわんど14:10発 → 平湯乗換 → 新穂高温泉着 約16:00" data-en="Sawando 2:10 PM → transfer Hirayu → Shinhodaka ~4:00 PM">さわんど14:10発 → 平湯乗換 → 新穂高温泉着 約16:00</span>
+          </div>
+          <div class="info-row">
+            <span class="ir-label" data-ja="徒歩" data-en="Walk">徒歩</span>
+            <span class="ir-value" data-ja="新穂高 → わさび平小屋（約1.5時間）→ 17:30頃着" data-en="Shinhodaka → Wasabidaira Hut (~1.5h) → arrive ~5:30 PM">新穂高 → わさび平小屋（約1.5時間）→ 17:30頃着</span>
+          </div>
+          <div class="info-row">
+            <span class="ir-label" data-ja="宿泊" data-en="Stay">宿泊</span>
+            <span class="ir-value" data-ja="わさび平小屋（小屋泊・翌日に備えて体力温存）" data-en="Wasabidaira Hut — lodge stay to conserve energy for Day 1">わさび平小屋（小屋泊・翌日に備えて体力温存）</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="day-card">
+        <div class="day-header">
+          <div class="day-badge common">7/31<br><span style="font-size:9px;font-weight:400;" data-ja="共通" data-en="shared">共通</span></div>
+          <div>
+            <div class="day-title" data-ja="新穂高 → 双六小屋" data-en="Shinhodaka → Sugoroku Hut">新穂高 → 双六小屋</div>
+            <div class="day-sub" data-ja="テント泊" data-en="Tent camp">テント泊</div>
+          </div>
+        </div>
+        <div class="day-body">
+          <div class="info-row">
+            <span class="ir-label" data-ja="通過点" data-en="Via">通過点</span>
+            <span class="ir-value" data-ja="鏡平山荘、弓折乗越" data-en="Kagamidaira Hut, Yumizori Pass">鏡平山荘、弓折乗越</span>
+          </div>
+          <div class="info-row">
+            <span class="ir-label" data-ja="CT" data-en="CT">CT</span>
+            <span class="ir-value">7.0h</span>
+          </div>
+          <div class="info-row">
+            <span class="ir-label" data-ja="出発" data-en="Depart">出発</span>
+            <span class="ir-value depart-value">5:00 AM</span>
+          </div>
+          <div class="info-row">
+            <span class="ir-label" data-ja="到着" data-en="Arrive">到着</span>
+            <span class="ir-value" data-ja="13:00頃" data-en="~1:00 PM">13:00頃</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="day-card">
+        <div class="day-header">
+          <div class="day-badge common">8/1<br><span style="font-size:9px;font-weight:400;" data-ja="共通" data-en="shared">共通</span></div>
+          <div>
+            <div class="day-title" data-ja="双六小屋 → 槍ヶ岳 → 南岳小屋" data-en="Sugoroku → Yarigatake → Minamidake">双六小屋 → 槍ヶ岳 → 南岳小屋</div>
+            <div class="day-sub" data-ja="テント泊" data-en="Tent camp">テント泊</div>
+          </div>
+        </div>
+        <div class="day-body">
+          <div class="info-row">
+            <span class="ir-label" data-ja="通過点" data-en="Via">通過点</span>
+            <span class="ir-value" data-ja="双六岳、西鎌尾根、槍ヶ岳（3,180m）" data-en="Mt. Sugoroku, Nishikama Ridge, Yarigatake (3,180m)">双六岳、西鎌尾根、槍ヶ岳（3,180m）</span>
+          </div>
+          <div class="info-row">
+            <span class="ir-label" data-ja="CT" data-en="CT">CT</span>
+            <span class="ir-value">9.0h</span>
+          </div>
+          <div class="info-row">
+            <span class="ir-label" data-ja="出発" data-en="Depart">出発</span>
+            <span class="ir-value depart-value">5:00 AM</span>
+          </div>
+          <div class="info-row">
+            <span class="ir-label" data-ja="到着" data-en="Arrive">到着</span>
+            <span class="ir-value" data-ja="15:00頃" data-en="~3:00 PM">15:00頃</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="day-card" style="border: 2px solid var(--danger);">
+        <div class="day-header" style="background:#fdecea;">
+          <div class="day-badge" style="background:var(--danger);">8/2<br><span style="font-size:9px;font-weight:400;" data-ja="核心日" data-en="Crux">核心日</span></div>
+          <div>
+            <div class="day-title" data-ja="南岳小屋 → 大キレット → 涸沢" data-en="Minamidake → Daikiretto → Karasawa">南岳小屋 → 大キレット → 涸沢</div>
+            <div class="day-sub" data-ja="テント泊" data-en="Tent camp">テント泊</div>
+          </div>
+        </div>
+        <div class="day-body">
+          <div class="info-row">
+            <span class="ir-label" data-ja="通過点" data-en="Via">通過点</span>
+            <span class="ir-value" data-ja="大キレット、長谷川ピーク、北穂高岳" data-en="Daikiretto, Hasegawa Peak, Kitahodaka">大キレット、長谷川ピーク、北穂高岳</span>
+          </div>
+          <div class="info-row">
+            <span class="ir-label" data-ja="CT" data-en="CT">CT</span>
+            <span class="ir-value">7.0h</span>
+          </div>
+          <div class="info-row">
+            <span class="ir-label" data-ja="出発" data-en="Depart">出発</span>
+            <span class="ir-value depart-value">5:00 AM ⚠️</span>
+          </div>
+          <div class="info-row">
+            <span class="ir-label" data-ja="到着" data-en="Arrive">到着</span>
+            <span class="ir-value" data-ja="13:00頃" data-en="~1:00 PM">13:00頃</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="day-card">
+        <div class="day-header">
+          <div class="day-badge">8/3</div>
+          <div>
+            <div class="day-title" data-ja="涸沢 → 上高地" data-en="Karasawa → Kamikochi">涸沢 → 上高地</div>
+            <div class="day-sub" data-ja="下山・解散" data-en="Descend / Finish">下山・解散</div>
+          </div>
+        </div>
+        <div class="day-body">
+          <div class="info-row">
+            <span class="ir-label" data-ja="通過点" data-en="Via">通過点</span>
+            <span class="ir-value" data-ja="本谷橋、横尾、徳沢" data-en="Hontatebashi, Yokoo, Tokusawa">本谷橋、横尾、徳沢</span>
+          </div>
+          <div class="info-row">
+            <span class="ir-label" data-ja="CT" data-en="CT">CT</span>
+            <span class="ir-value">4.5h</span>
+          </div>
+          <div class="info-row">
+            <span class="ir-label" data-ja="出発" data-en="Depart">出発</span>
+            <span class="ir-value depart-value">6:00 AM</span>
+          </div>
+          <div class="info-row">
+            <span class="ir-label" data-ja="到着" data-en="Arrive">到着</span>
+            <span class="ir-value" data-ja="11:30頃" data-en="~11:30 AM">11:30頃</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PLAN B -->
+  <div class="plan-content section" id="plan-b">
+  <div style="margin: 0 0 10px 0;">
+    <a href="https://www.yamareco.com/modules/yr_plan/code-foKFBVBGSyKRZKoVc9h3Hg" target="_blank"
+       style="display:flex; align-items:center; gap:10px; background:var(--white); border:1px solid #dce3ed; border-radius:10px; padding:11px 14px; text-decoration:none; box-shadow:0 1px 4px rgba(0,0,0,0.07);">
+      <span style="font-size:22px;">🗺</span>
+      <span>
+        <span style="display:block; font-size:13px; font-weight:700; color:var(--ink);" data-ja="ヤマレコ 登山計画を見る" data-en="View Route Plan on Yamareco">ヤマレコ 登山計画を見る</span>
+        <span style="display:block; font-size:11px; color:var(--mist);" data-ja="地図・GPSルート・標高グラフ" data-en="Map · GPS route · Elevation profile">地図・GPSルート・標高グラフ</span>
+      </span>
+      <span style="margin-left:auto; color:var(--mist); font-size:14px;">↗</span>
+    </a>
+  </div>
+  <div style="margin: 0 0 10px 0;">
+    <div style="border-radius:10px; overflow:hidden; box-shadow:0 1px 4px rgba(0,0,0,0.12); position:relative;">
+      <img src="map_plan_b.png"
+           alt="ルート地図 / Route Map"
+           style="width:100%; display:block;" />
+      <div style="position:absolute; bottom:0; left:0; right:0; background:linear-gradient(transparent, rgba(0,0,0,0.55)); padding:8px 12px;">
+        <span style="color:#fff; font-size:11px; font-weight:600;" data-ja="プランB ルート図（ヤマレコより）" data-en="Plan B Route Map (via Yamareco)">プランB ルート図（ヤマレコより）</span>
+      </div>
+    </div>
+  </div>
+    <div class="day-list">
+      <div class="day-card">
+        <div class="day-header" style="background:#eef7f0;">
+          <div class="day-badge common">7/30–8/1</div>
+          <div>
+            <div class="day-title" data-ja="プランAと同じ（わさび平小屋〜南岳小屋まで共通）" data-en="Same as Plan A through Minamidake Hut">プランAと同じ（わさび平小屋〜南岳小屋まで共通）</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="day-card">
+        <div class="day-header">
+          <div class="day-badge" style="background:var(--plan-b);">8/2</div>
+          <div>
+            <div class="day-title" data-ja="南岳小屋 → 天狗原 → 槍沢ロッヂ → 徳沢" data-en="Minamidake → Tenguhara → Yarisawa Lodge → Tokusawa">南岳小屋 → 天狗原 → 槍沢ロッヂ → 徳沢</div>
+            <div class="day-sub" data-ja="テント泊" data-en="Tent camp">テント泊</div>
+          </div>
+        </div>
+        <div class="day-body">
+          <div class="info-row">
+            <span class="ir-label" data-ja="通過点" data-en="Via">通過点</span>
+            <span class="ir-value" data-ja="天狗原、天狗池、槍沢ロッヂ、横尾" data-en="Tenguhara, Tengu Pond, Yarisawa Lodge, Yokoo">天狗原、天狗池、槍沢ロッヂ、横尾</span>
+          </div>
+          <div class="info-row">
+            <span class="ir-label" data-ja="CT" data-en="CT">CT</span>
+            <span class="ir-value">7.0h</span>
+          </div>
+          <div class="info-row">
+            <span class="ir-label" data-ja="出発" data-en="Depart">出発</span>
+            <span class="ir-value depart-value">6:00 AM</span>
+          </div>
+          <div class="info-row">
+            <span class="ir-label" data-ja="到着" data-en="Arrive">到着</span>
+            <span class="ir-value" data-ja="14:00頃" data-en="~2:00 PM">14:00頃</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="day-card">
+        <div class="day-header">
+          <div class="day-badge" style="background:var(--plan-b);">8/3</div>
+          <div>
+            <div class="day-title" data-ja="徳沢 → 上高地" data-en="Tokusawa → Kamikochi">徳沢 → 上高地</div>
+            <div class="day-sub" data-ja="下山・解散" data-en="Descend / Finish">下山・解散</div>
+          </div>
+        </div>
+        <div class="day-body">
+          <div class="info-row">
+            <span class="ir-label" data-ja="通過点" data-en="Via">通過点</span>
+            <span class="ir-value" data-ja="明神" data-en="Myojin">明神</span>
+          </div>
+          <div class="info-row">
+            <span class="ir-label" data-ja="CT" data-en="CT">CT</span>
+            <span class="ir-value">1.5h</span>
+          </div>
+          <div class="info-row">
+            <span class="ir-label" data-ja="出発" data-en="Depart">出発</span>
+            <span class="ir-value depart-value">8:00 AM</span>
+          </div>
+          <div class="info-row">
+            <span class="ir-label" data-ja="到着" data-en="Arrive">到着</span>
+            <span class="ir-value" data-ja="9:30頃" data-en="~9:30 AM">9:30頃</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PLAN C -->
+  <div class="plan-content section" id="plan-c">
+  <div style="margin: 0 0 10px 0;">
+    <a href="https://www.yamareco.com/modules/yr_plan/code-yQaZMye5RG-PdX48SUXtKw" target="_blank"
+       style="display:flex; align-items:center; gap:10px; background:var(--white); border:1px solid #dce3ed; border-radius:10px; padding:11px 14px; text-decoration:none; box-shadow:0 1px 4px rgba(0,0,0,0.07);">
+      <span style="font-size:22px;">🗺</span>
+      <span>
+        <span style="display:block; font-size:13px; font-weight:700; color:var(--ink);" data-ja="ヤマレコ 登山計画を見る" data-en="View Route Plan on Yamareco">ヤマレコ 登山計画を見る</span>
+        <span style="display:block; font-size:11px; color:var(--mist);" data-ja="地図・GPSルート・標高グラフ" data-en="Map · GPS route · Elevation profile">地図・GPSルート・標高グラフ</span>
+      </span>
+      <span style="margin-left:auto; color:var(--mist); font-size:14px;">↗</span>
+    </a>
+  </div>
+  <div style="margin: 0 0 10px 0;">
+    <div style="border-radius:10px; overflow:hidden; box-shadow:0 1px 4px rgba(0,0,0,0.12); position:relative;">
+      <img src="map_plan_c.png"
+           alt="ルート地図 / Route Map"
+           style="width:100%; display:block;" />
+      <div style="position:absolute; bottom:0; left:0; right:0; background:linear-gradient(transparent, rgba(0,0,0,0.55)); padding:8px 12px;">
+        <span style="color:#fff; font-size:11px; font-weight:600;" data-ja="プランC ルート図（ヤマレコより）" data-en="Plan C Route Map (via Yamareco)">プランC ルート図（ヤマレコより）</span>
+      </div>
+    </div>
+  </div>
+    <div class="day-list">
+      <div class="day-card">
+        <div class="day-header" style="background:#fdf8ec;">
+          <div class="day-badge common">7/30–7/31</div>
+          <div>
+            <div class="day-title" data-ja="プランAと同じ（わさび平小屋〜双六小屋まで共通）" data-en="Same as Plan A through Sugoroku Hut">プランAと同じ（わさび平小屋〜双六小屋まで共通）</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="day-card">
+        <div class="day-header" style="background:#fdecea;">
+          <div class="day-badge" style="background:var(--danger);">8/1</div>
+          <div>
+            <div class="day-title" data-ja="双六小屋 → 槍ヶ岳山荘 or 殺生ヒュッテ" data-en="Sugoroku → Yarigatake Hut or Sessho Hut">双六小屋 → 槍ヶ岳山荘 or 殺生ヒュッテ</div>
+            <div class="day-sub" data-ja="テント or 小屋泊（⚠️ 槍ヶ岳到着時点で判断）" data-en="Tent or lodge (⚠️ Decide on arrival at Yarigatake)">テント or 小屋泊（⚠️ 槍ヶ岳到着時点で判断）</div>
+          </div>
+        </div>
+        <div class="day-body">
+          <div class="info-row">
+            <span class="ir-label" data-ja="通過点" data-en="Via">通過点</span>
+            <span class="ir-value" data-ja="双六岳、西鎌尾根、槍ヶ岳（3,180m）" data-en="Mt. Sugoroku, Nishikama Ridge, Yarigatake (3,180m)">双六岳、西鎌尾根、槍ヶ岳（3,180m）</span>
+          </div>
+          <div class="info-row">
+            <span class="ir-label" data-ja="判断基準" data-en="Decision">判断基準</span>
+            <span class="ir-value" style="color:var(--danger); font-size:12px;" data-ja="13時以降着 / 穂先で消耗 / どちらかが南岳進行に不安" data-en="Arrive after 1 PM / Exhausted by summit / Either unsure about continuing">13時以降着 / 穂先で消耗 / どちらかが南岳進行に不安</span>
+          </div>
+          <div class="info-row">
+            <span class="ir-label" data-ja="CT" data-en="CT">CT</span>
+            <span class="ir-value">7.0h</span>
+          </div>
+          <div class="info-row">
+            <span class="ir-label" data-ja="出発" data-en="Depart">出発</span>
+            <span class="ir-value depart-value">5:00 AM</span>
+          </div>
+          <div class="info-row">
+            <span class="ir-label" data-ja="到着" data-en="Arrive">到着</span>
+            <span class="ir-value" data-ja="13:00頃" data-en="~1:00 PM">13:00頃</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="day-card">
+        <div class="day-header">
+          <div class="day-badge" style="background:var(--plan-c);">8/2</div>
+          <div>
+            <div class="day-title" data-ja="槍ヶ岳山荘 → 殺生ヒュッテ → 槍沢ロッヂ → 徳沢" data-en="Yarigatake Hut → Sessho → Yarisawa Lodge → Tokusawa">槍ヶ岳山荘 → 殺生ヒュッテ → 槍沢ロッヂ → 徳沢</div>
+            <div class="day-sub" data-ja="テント泊" data-en="Tent camp">テント泊</div>
+          </div>
+        </div>
+        <div class="day-body">
+          <div class="info-row">
+            <span class="ir-label" data-ja="通過点" data-en="Via">通過点</span>
+            <span class="ir-value" data-ja="殺生ヒュッテ、槍沢ロッヂ、横尾" data-en="Sessho Hut, Yarisawa Lodge, Yokoo">殺生ヒュッテ、槍沢ロッヂ、横尾</span>
+          </div>
+          <div class="info-row">
+            <span class="ir-label" data-ja="CT" data-en="CT">CT</span>
+            <span class="ir-value">6.0h</span>
+          </div>
+          <div class="info-row">
+            <span class="ir-label" data-ja="出発" data-en="Depart">出発</span>
+            <span class="ir-value depart-value">7:00 AM</span>
+          </div>
+          <div class="info-row">
+            <span class="ir-label" data-ja="到着" data-en="Arrive">到着</span>
+            <span class="ir-value" data-ja="14:00頃" data-en="~2:00 PM">14:00頃</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="day-card">
+        <div class="day-header">
+          <div class="day-badge" style="background:var(--plan-c);">8/3</div>
+          <div>
+            <div class="day-title" data-ja="徳沢 → 上高地" data-en="Tokusawa → Kamikochi">徳沢 → 上高地</div>
+            <div class="day-sub" data-ja="下山・解散" data-en="Descend / Finish">下山・解散</div>
+          </div>
+        </div>
+        <div class="day-body">
+          <div class="info-row">
+            <span class="ir-label" data-ja="通過点" data-en="Via">通過点</span>
+            <span class="ir-value" data-ja="明神" data-en="Myojin">明神</span>
+          </div>
+          <div class="info-row">
+            <span class="ir-label" data-ja="CT" data-en="CT">CT</span>
+            <span class="ir-value">1.5h</span>
+          </div>
+          <div class="info-row">
+            <span class="ir-label" data-ja="出発" data-en="Depart">出発</span>
+            <span class="ir-value depart-value">8:00 AM</span>
+          </div>
+          <div class="info-row">
+            <span class="ir-label" data-ja="到着" data-en="Arrive">到着</span>
+            <span class="ir-value" data-ja="9:30頃" data-en="~9:30 AM">9:30頃</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════ VIEW: BRANCH ════ -->
+<div class="view" id="view-branch">
+  <div class="section">
+    <div class="section-label" data-ja="2段階の判断フロー" data-en="Two-Stage Decision Flow">2段階の判断フロー</div>
+
+    <div class="section-label" style="margin-top:4px; font-size:10px; color:var(--plan-c);" data-ja="【第1判断】8/1 槍ヶ岳到着時点" data-en="[DECISION 1] Aug 1 — On arriving at Yarigatake">【第1判断】8/1 槍ヶ岳到着時点</div>
+    <div class="decision-card" style="margin-bottom:16px;">
+      <div class="decision-hub" style="background:var(--plan-c);">
+        <div class="dh-title" data-ja="槍ヶ岳到着時点でチェック" data-en="Check on arrival at Yarigatake">槍ヶ岳到着時点でチェック</div>
+        <div class="dh-sub" data-ja="7/31 新穂高→双六 ／ 8/1 双六→西鎌尾根→槍ヶ岳" data-en="Jul 31 Shinhodaka→Sugoroku ／ Aug 1 Sugoroku→Nishikama→Yarigatake">7/31 新穂高→双六 ／ 8/1 双六→西鎌尾根→槍ヶ岳</div>
+      </div>
+      <div class="decision-arrow">▼</div>
+      <div class="decision-branches">
+        <div class="branch-row">
+          <div class="branch-dot" style="background:#555;">→</div>
+          <div class="branch-text">
+            <div class="branch-plan" style="color:#555;" data-ja="南岳小屋へ進む（第2判断へ）" data-en="Continue to Minamidake Hut → proceed to Decision 2">南岳小屋へ進む（第2判断へ）</div>
+            <div class="branch-cond" data-ja="槍到着13時前 ＋ 2人とも余裕あり ＋ 穂先登頂後も体力残っている" data-en="Arrive before 1 PM + Both feel fine + Still have energy after summit">槍到着13時前 ＋ 2人とも余裕あり ＋ 穂先登頂後も体力残っている</div>
+          </div>
+        </div>
+        <div class="branch-row">
+          <div class="branch-dot dot-c">C</div>
+          <div class="branch-text">
+            <div class="branch-plan text-c" data-ja="プランC ─ 槍ヶ岳山荘 or 殺生ヒュッテ泊" data-en="Plan C ─ Stay at Yarigatake Hut or Sessho Hut">プランC ─ 槍ヶ岳山荘 or 殺生ヒュッテ泊</div>
+            <div class="branch-cond" data-ja="13時以降着 ／ 穂先で予想以上に消耗 ／ どちらかが南岳進行に不安" data-en="Arrive after 1 PM / Exhausted by summit / Either unsure about continuing to Minamidake">13時以降着 ／ 穂先で予想以上に消耗 ／ どちらかが南岳進行に不安</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-label" style="margin-top:4px; font-size:10px; color:var(--peak);" data-ja="【第2判断】8/1夜・南岳小屋にて" data-en="[DECISION 2] Aug 1 evening — At Minamidake Hut">【第2判断】8/1夜・南岳小屋にて</div>
+    <div class="decision-card">
+      <div class="decision-hub">
+        <div class="dh-title" data-ja="南岳小屋で翌日のプランを決定" data-en="Decide next day's plan at Minamidake Hut">南岳小屋で翌日のプランを決定</div>
+        <div class="dh-sub" data-ja="前夜の天気予報 ＋ 2人の疲労感で判断" data-en="Base on weather forecast + how both feel">前夜の天気予報 ＋ 2人の疲労感で判断</div>
+      </div>
+      <div class="decision-arrow">▼</div>
+      <div class="decision-branches">
+        <div class="branch-row">
+          <div class="branch-dot dot-a">A</div>
+          <div class="branch-text">
+            <div class="branch-plan text-a" data-ja="プランA ─ 大キレット縦走" data-en="Plan A ─ Daikiretto Traverse">プランA ─ 大キレット縦走</div>
+            <div class="branch-cond" data-ja="2人とも体力十分 ＋ 翌朝の天気予報が晴れ" data-en="Both feel strong + Clear weather forecast for the morning">2人とも体力十分 ＋ 翌朝の天気予報が晴れ</div>
+          </div>
+        </div>
+        <div class="branch-row">
+          <div class="branch-dot dot-b">B</div>
+          <div class="branch-text">
+            <div class="branch-plan text-b" data-ja="プランB ─ 天狗原→槍沢下山" data-en="Plan B ─ Tenguhara → Yarisawa descent">プランB ─ 天狗原→槍沢下山</div>
+            <div class="branch-cond" data-ja="体力は十分 ＋ 天候不安定または不良予報" data-en="Both feel fine + Unstable or poor weather forecast">体力は十分 ＋ 天候不安定または不良予報</div>
+          </div>
+        </div>
+        <div class="branch-row">
+          <div class="branch-dot dot-x">!</div>
+          <div class="branch-text">
+            <div class="branch-plan text-x" data-ja="即プランB へ" data-en="Switch immediately to Plan B">即プランB へ</div>
+            <div class="branch-cond" data-ja="天候不良 ＋ 疲労あり ／ どちらかが体調不良" data-en="Poor weather + Fatigue / Either person unwell">天候不良 ＋ 疲労あり ／ どちらかが体調不良</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════ VIEW: NOTES ════ -->
+<div class="view" id="view-notes">
+  <div class="section">
+    <div class="section-label" data-ja="タップで展開" data-en="Tap to expand">タップで展開</div>
+
+    <div class="note-card">
+      <div class="note-header" onclick="toggleNote(this)">
+        <span class="note-tag tag-all" data-ja="全プラン共通" data-en="ALL PLANS">全プラン共通</span>
+        <span class="note-title" data-ja="基本的な注意事項" data-en="General Precautions">基本的な注意事項</span>
+        <span class="note-chevron">▼</span>
+      </div>
+      <div class="note-body">
+        <ul>
+          <li data-ja="8月の北アルプスは15時頃から雷雨リスクが高まる。稜線上の行動は14時までに終えること。" data-en="Thunderstorms often develop by 3 PM in August. Complete ridge-line travel by 2 PM.">8月の北アルプスは15時頃から雷雨リスクが高まる。稜線上の行動は14時までに終えること。</li>
+          <li data-ja="各テント場は先着順。双六小屋・涸沢は特に混雑するため、14時前到着を目標に。" data-en="All campsites are first-come. Sugoroku and Karasawa fill up quickly — target arrival before 2 PM.">各テント場は先着順。双六小屋・涸沢は特に混雑するため、14時前到着を目標に。</li>
+          <li data-ja="天気予報は「ヤマテン」または「tenki.jp 登山天気」で前夜と当日朝に必ず確認。" data-en="Check Yamaten or tenki.jp Mountain Weather the evening before and morning of each day.">天気予報は「ヤマテン」または「tenki.jp 登山天気」で前夜と当日朝に必ず確認。</li>
+          <li data-ja="西鎌尾根〜南岳間は水場がほぼない。双六小屋で水2L以上を確保すること。" data-en="Minimal water sources between Sugoroku and Minamidake. Carry 2L+ from Sugoroku Hut.">西鎌尾根〜南岳間は水場がほぼない。双六小屋で水2L以上を確保すること。</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="note-card">
+      <div class="note-header" onclick="toggleNote(this)">
+        <span class="note-tag tag-warn" data-ja="プランA 核心部" data-en="PLAN A CRUX">プランA 核心部</span>
+        <span class="note-title" data-ja="大キレット通過の注意" data-en="Daikiretto Safety Notes">大キレット通過の注意</span>
+        <span class="note-chevron">▼</span>
+      </div>
+      <div class="note-body">
+        <ul>
+          <li data-ja="南岳小屋を5:00に出発し、大キレットを午前中に通過完了することが最優先。" data-en="Depart Minamidake at 5:00 AM sharp and complete the traverse before noon — top priority.">南岳小屋を5:00に出発し、大キレットを午前中に通過完了することが最優先。</li>
+          <li data-ja="長谷川ピーク前後のナイフリッジはザックの重心に注意。2人の間隔を十分に開けて通過。" data-en="Near Hasegawa Peak, pay attention to pack weight distribution. Keep spacing between hikers.">長谷川ピーク前後のナイフリッジはザックの重心に注意。2人の間隔を十分に開けて通過。</li>
+          <li data-ja="濡れた岩は難易度が大幅に上昇。前夜の予報で少しでも雨の可能性があればプランBへ。" data-en="Wet rock dramatically increases difficulty. Switch to Plan B if any rain is forecast overnight.">濡れた岩は難易度が大幅に上昇。前夜の予報で少しでも雨の可能性があればプランBへ。</li>
+          <li data-ja="鎖・ハシゴ通過時は落石に特に注意。上下方向の間隔を意識する。" data-en="Watch for rockfall on chains and ladders. Maintain vertical spacing between hikers.">鎖・ハシゴ通過時は落石に特に注意。上下方向の間隔を意識する。</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="note-card">
+      <div class="note-header" onclick="toggleNote(this)">
+        <span class="note-tag tag-b" data-ja="プランB" data-en="PLAN B">プランB</span>
+        <span class="note-title" data-ja="天狗原経由・槍沢下山の注意" data-en="Tenguhara Route Notes">天狗原経由・槍沢下山の注意</span>
+        <span class="note-chevron">▼</span>
+      </div>
+      <div class="note-body">
+        <ul>
+          <li data-ja="南岳から天狗原への下降は一般登山道だが急傾斜。朝の体力があるうちに慎重に通過する。" data-en="The descent from Minamidake to Tenguhara is a standard trail but steep. Tackle it while fresh in the morning.">南岳から天狗原への下降は一般登山道だが急傾斜。朝の体力があるうちに慎重に通過する。</li>
+          <li data-ja="槍ヶ岳山荘への登り返しがなく、前進しながら下山できる。心理的に大キレットを諦めやすい。" data-en="No re-ascent required — you descend while moving forward. Psychologically easier than turning back to Yarigatake.">槍ヶ岳山荘への登り返しがなく、前進しながら下山できる。心理的に大キレットを諦めやすい。</li>
+          <li data-ja="天狗池付近は晴れていれば槍ヶ岳の逆さ槍が見られる絶景ポイント。" data-en="On clear days, Tengu Pond offers a stunning reflection of Yarigatake — a highlight even on an escape route.">天狗池付近は晴れていれば槍ヶ岳の逆さ槍が見られる絶景ポイント。</li>
+          <li data-ja="徳沢テント場は梓川沿いの快適な環境。最終日をのんびり過ごせる。" data-en="Tokusawa campsite along the Azusa River is beautiful — a relaxing way to wind down the trip.">徳沢テント場は梓川沿いの快適な環境。最終日をのんびり過ごせる。</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="note-card">
+      <div class="note-header" onclick="toggleNote(this)">
+        <span class="note-tag tag-c" data-ja="プランC" data-en="PLAN C">プランC</span>
+        <span class="note-title" data-ja="槍ヶ岳山荘泊・槍沢下山の注意" data-en="Yarigatake Hut Stay Notes">槍ヶ岳山荘泊・槍沢下山の注意</span>
+        <span class="note-chevron">▼</span>
+      </div>
+      <div class="note-body">
+        <ul>
+          <li data-ja="槍ヶ岳山荘のテント場は人気で狭く、満員の場合は殺生ヒュッテへ降りる。殺生ヒュッテは比較的余裕がある。" data-en="The Yarigatake Hut campsite is small and fills up fast. If full, descend to Sessho Hut, which has more space.">槍ヶ岳山荘のテント場は人気で狭く、満員の場合は殺生ヒュッテへ降りる。殺生ヒュッテは比較的余裕がある。</li>
+          <li data-ja="翌8/2は槍沢をゆっくり下るだけ。前日の消耗を翌日に持ち越さない余裕ある行動ができる。" data-en="Aug 2 is a straightforward descent down Yarisawa — plenty of time to recover from the previous day.">翌8/2は槍沢をゆっくり下るだけ。前日の消耗を翌日に持ち越さない余裕ある行動ができる。</li>
+          <li data-ja="徳沢テント場泊で8/3は最短1.5時間で上高地へ。帰路のバス・タクシー時間に余裕が生まれる。" data-en="Stay at Tokusawa and reach Kamikochi in just 1.5h on Aug 3 — easy connection to buses home.">徳沢テント場泊で8/3は最短1.5時間で上高地へ。帰路のバス・タクシー時間に余裕が生まれる。</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════ VIEW: GEAR ════ -->
+<div class="view" id="view-gear">
+  <div class="section">
+
+    <div class="gear-card">
+      <div class="gear-header" data-ja="🪨 岩場・安全装備" data-en="🪨 Scrambling & Safety">🪨 岩場・安全装備</div>
+      <div class="gear-item">
+        <div>
+          <div class="gear-name" data-ja="ヘルメット" data-en="Climbing Helmet">ヘルメット</div>
+          <div class="gear-note" data-ja="大キレット通過時は着用必須。落石・スリップ時の頭部保護。" data-en="Must be worn on Daikiretto. Protects against rockfall and impact from slips.">大キレット通過時は着用必須。落石・スリップ時の頭部保護。</div>
+        </div>
+        <span class="badge badge-req" data-ja="必携" data-en="Essential">必携</span>
+      </div>
+      <div class="gear-item">
+        <div>
+          <div class="gear-name" data-ja="グリップ系グローブ（薄手）" data-en="Thin Grip Gloves">グリップ系グローブ（薄手）</div>
+          <div class="gear-note" data-ja="鎖場・岩場でのグリップ向上と怪我防止。" data-en="Better grip on chains and rock; reduces hand injuries.">鎖場・岩場でのグリップ向上と怪我防止。</div>
+        </div>
+        <span class="badge badge-req" data-ja="必携" data-en="Essential">必携</span>
+      </div>
+    </div>
+
+    <div class="gear-card">
+      <div class="gear-header" data-ja="🌧 雨天・防寒装備" data-en="🌧 Weather & Cold">🌧 雨天・防寒装備</div>
+      <div class="gear-item">
+        <div>
+          <div class="gear-name" data-ja="レインウェア上下セパレート" data-en="Rain Jacket & Pants">レインウェア上下セパレート</div>
+          <div class="gear-note" data-ja="ゴアテックス等の防水透湿素材。ポンチョは岩場で危険なので不可。" data-en="Gore-Tex or equivalent. No ponchos — dangerous on rocky terrain.">ゴアテックス等の防水透湿素材。ポンチョは岩場で危険なので不可。</div>
+        </div>
+        <span class="badge badge-req" data-ja="必携" data-en="Essential">必携</span>
+      </div>
+      <div class="gear-item">
+        <div>
+          <div class="gear-name" data-ja="防寒着（フリース or ダウン）" data-en="Insulating Layer">防寒着（フリース or ダウン）</div>
+          <div class="gear-note" data-ja="南岳小屋（3,032m）は朝晩10℃前後まで冷える。" data-en="Minamidake Hut (3,032m) drops to ~10°C at night and early morning.">南岳小屋（3,032m）は朝晩10℃前後まで冷える。</div>
+        </div>
+        <span class="badge badge-req" data-ja="必携" data-en="Essential">必携</span>
+      </div>
+    </div>
+
+    <div class="gear-card">
+      <div class="gear-header" data-ja="🎒 ザック・テント・寝具" data-en="🎒 Pack, Shelter & Sleep">🎒 ザック・テント・寝具</div>
+      <div class="gear-item">
+        <div>
+          <div class="gear-name" data-ja="ザック 45〜50L" data-en="Backpack 45–50L">ザック 45〜50L</div>
+          <div class="gear-note" data-ja="大キレットでは重心管理が重要。50L以下が理想。" data-en="Center of gravity matters on Daikiretto. Under 50L is ideal.">大キレットでは重心管理が重要。50L以下が理想。</div>
+        </div>
+        <span class="badge badge-rec" data-ja="推奨" data-en="Recommended">推奨</span>
+      </div>
+      <div class="gear-item">
+        <div>
+          <div class="gear-name" data-ja="テント（自立式・軽量）" data-en="Freestanding Tent (lightweight)">テント（自立式・軽量）</div>
+          <div class="gear-note" data-ja="非自立式はペグが打てない岩稜帯のテント場で苦労する。" data-en="Non-freestanding designs struggle on rocky campsites where pegs can't be driven.">非自立式はペグが打てない岩稜帯のテント場で苦労する。</div>
+        </div>
+        <span class="badge badge-req" data-ja="必携" data-en="Essential">必携</span>
+      </div>
+      <div class="gear-item">
+        <div>
+          <div class="gear-name" data-ja="シュラフ（快適温度5〜10℃）" data-en="Sleeping Bag (comfort ~5–10°C)">シュラフ（快適温度5〜10℃）</div>
+          <div class="gear-note" data-ja="高標高テント泊に対応したもの。南岳小屋（3,032m）は朝晩10℃前後まで冷える。" data-en="Suitable for high-altitude camping. Minamidake (3,032m) drops to ~10°C at night.">高標高テント泊に対応したもの。南岳小屋（3,032m）は朝晩10℃前後まで冷える。</div>
+        </div>
+        <span class="badge badge-req" data-ja="必携" data-en="Essential">必携</span>
+      </div>
+      <div class="gear-item">
+        <div>
+          <div class="gear-name" data-ja="スリーピングマット" data-en="Sleeping Pad">スリーピングマット</div>
+          <div class="gear-note" data-ja="岩稜帯のテント場は地面が硬く凹凸がある。断熱性のあるものを選ぶこと。" data-en="Rocky campsites require a durable, insulating pad. Inflatable or foam both work.">岩稜帯のテント場は地面が硬く凹凸がある。断熱性のあるものを選ぶこと。</div>
+        </div>
+        <span class="badge badge-req" data-ja="必携" data-en="Essential">必携</span>
+      </div>
+    </div>
+
+    <div class="gear-card">
+      <div class="gear-header" data-ja="💊 サポート・その他" data-en="💊 Support & Utilities">💊 サポート・その他</div>
+      <div class="gear-item">
+        <div>
+          <div class="gear-name" data-ja="モバイルバッテリー（5,000mAh以上）" data-en="Power Bank (5,000 mAh+)">モバイルバッテリー（5,000mAh以上）</div>
+          <div class="gear-note" data-ja="ヤマテン・GPS・撮影を考慮。" data-en="For Yamaten, GPS, and photography over 4 days without charging access.">ヤマテン・GPS・撮影を考慮。</div>
+        </div>
+        <span class="badge badge-rec" data-ja="推奨" data-en="Recommended">推奨</span>
+      </div>
+      <div class="gear-item">
+        <div>
+          <div class="gear-name" data-ja="行動食（多め）" data-en="Extra Snacks & Energy Food">行動食（多め）</div>
+          <div class="gear-note" data-ja="特に8/1・8/2は多めに。疲労時の判断力維持に直結する。" data-en="Especially important on Aug 1 and 2. Staying fueled maintains decision-making ability.">特に8/1・8/2は多めに。疲労時の判断力維持に直結する。</div>
+        </div>
+        <span class="badge badge-req" data-ja="必携" data-en="Essential">必携</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════ VIEW: EMERGENCY ════ -->
+<div class="view" id="view-emg">
+  <div class="section">
+
+    <div class="emg-card">
+      <div class="emg-header" data-ja="🆘 緊急連絡先" data-en="🆘 Emergency Contacts">🆘 緊急連絡先</div>
+      <div class="emg-item">
+        <span class="emg-label" data-ja="警察・山岳救助" data-en="Police">警察・山岳救助</span>
+        <span class="emg-value"><a href="tel:110" style="color:var(--danger);text-decoration:none;">110</a></span>
+      </div>
+      <div class="emg-item">
+        <span class="emg-label" data-ja="長野県警山岳" data-en="Nagano Police">長野県警山岳</span>
+        <span class="emg-value"><a href="tel:0263350110" style="color:var(--danger);text-decoration:none;">0263-35-0110</a></span>
+      </div>
+      <div class="emg-item">
+        <span class="emg-label" data-ja="岐阜県警" data-en="Gifu Police">岐阜県警</span>
+        <span class="emg-value"><a href="tel:0582712424" style="color:var(--danger);text-decoration:none;">058-271-2424</a></span>
+      </div>
+    </div>
+
+    <div class="emg-card">
+      <div class="emg-header" style="background:var(--slate);" data-ja="🏠 山小屋連絡先" data-en="🏠 Mountain Huts">🏠 山小屋連絡先</div>
+      <div class="emg-item" style="flex-direction:column; gap:4px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
+          <span class="emg-label" data-ja="双六小屋" data-en="Sugoroku Hut">双六小屋</span>
+          <span class="emg-value"><a href="tel:09078690545" style="color:var(--peak);text-decoration:none;">090-7869-0545</a></span>
+        </div>
+        <a href="https://www.sugorokugoya.com/sugoroku/" target="_blank" style="font-size:11px; color:var(--ridge); text-decoration:none;">🌐 公式サイト / Official Website ↗</a>
+      </div>
+      <div class="emg-item" style="flex-direction:column; gap:4px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
+          <span class="emg-label" data-ja="槍ヶ岳山荘" data-en="Yarigatake Hut">槍ヶ岳山荘</span>
+          <span class="emg-value"><a href="tel:0263357200" style="color:var(--peak);text-decoration:none;">0263-35-7200</a></span>
+        </div>
+        <a href="https://www.yarigatake.co.jp/yarigatake/" target="_blank" style="font-size:11px; color:var(--ridge); text-decoration:none;">🌐 公式サイト / Official Website ↗</a>
+      </div>
+      <div class="emg-item" style="flex-direction:column; gap:4px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
+          <span class="emg-label" data-ja="南岳小屋" data-en="Minamidake Hut">南岳小屋</span>
+          <span class="emg-value"><a href="tel:09022041917" style="color:var(--peak);text-decoration:none;">090-2204-1917</a></span>
+        </div>
+        <a href="https://www.yarigatake.co.jp/minamidake/" target="_blank" style="font-size:11px; color:var(--ridge); text-decoration:none;">🌐 公式サイト / Official Website ↗</a>
+      </div>
+      <div class="emg-item" style="flex-direction:column; gap:4px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
+          <span class="emg-label" data-ja="北穂高小屋" data-en="Kitahodaka Hut">北穂高小屋</span>
+          <span class="emg-value"><a href="tel:09014228886" style="color:var(--peak);text-decoration:none;">090-1422-8886</a></span>
+        </div>
+        <a href="https://www.kitaho.co.jp/" target="_blank" style="font-size:11px; color:var(--ridge); text-decoration:none;">🌐 公式サイト / Official Website ↗</a>
+      </div>
+    </div>
+
+    <div class="emg-card">
+      <div class="emg-header" style="background:var(--peak);" data-ja="🔗 参考リンク" data-en="🔗 Useful Links">🔗 参考リンク</div>
+      <div class="emg-item" style="flex-direction:column; gap:4px;">
+        <div style="font-size:13px; font-weight:600; color:var(--ink);" data-ja="Japan Travel — 槍ヶ岳ガイド（英語）" data-en="Japan Travel — Mt. Yarigatake Guide">Japan Travel — 槍ヶ岳ガイド（英語）</div>
+        <a href="https://www.japan.travel/en/sports/hiking/courses/mt-yarigatake/" target="_blank" style="font-size:11px; color:var(--ridge); text-decoration:none; word-break:break-all;">🌏 japan.travel — Yarigatake Hiking Course ↗</a>
+      </div>
+    </div>
+
+    <div class="note-card">
+      <div class="note-header" onclick="toggleNote(this)">
+        <span class="note-tag tag-all" data-ja="事前準備" data-en="PREP">事前準備</span>
+        <span class="note-title" data-ja="登山届・保険について" data-en="Registration & Insurance">登山届・保険について</span>
+        <span class="note-chevron">▼</span>
+      </div>
+      <div class="note-body">
+        <ul>
+          <li data-ja="登山届はCompass（コンパス）から事前に提出すること。" data-en="Submit a hiking registration (登山届) via the Compass app before departure.">登山届はCompass（コンパス）から事前に提出すること。</li>
+          <li data-ja="山岳保険への加入を強く推奨。ヘリコプター救助費用は数十万円になることがある。" data-en="Mountain rescue insurance is strongly recommended. Helicopter rescue can cost hundreds of thousands of yen.">山岳保険への加入を強く推奨。ヘリコプター救助費用は数十万円になることがある。</li>
+          <li data-ja="Garmin inReachなどの衛星通信デバイスがあれば携行すること。" data-en="If you have a satellite communicator (e.g. Garmin inReach), bring it.">Garmin inReachなどの衛星通信デバイスがあれば携行すること。</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ─── NAVIGATION ───
+  function showView(id) {
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('view-' + id).classList.add('active');
+    document.getElementById('nav-' + id).classList.add('active');
+    window.scrollTo(0, 0);
+  }
+
+  // ─── PLAN TABS ───
+  let currentPlan = 'a';
+  function showPlan(plan) {
+    ['a','b','c'].forEach(p => {
+      document.getElementById('plan-' + p).classList.remove('visible');
+      const tab = document.getElementById('tab-' + p);
+      tab.classList.remove('active-a','active-b','active-c');
+    });
+    document.getElementById('plan-' + plan).classList.add('visible');
+    document.getElementById('tab-' + plan).classList.add('active-' + plan);
+    currentPlan = plan;
+  }
+
+  // ─── ACCORDION ───
+  function toggleNote(header) {
+    header.classList.toggle('open');
+    const body = header.nextElementSibling;
+    body.classList.toggle('open');
+  }
+
+  // ─── LANGUAGE ───
+  let lang = 'ja';
+  function setLang(l) {
+    lang = l;
+    document.getElementById('btn-ja').classList.toggle('active', l === 'ja');
+    document.getElementById('btn-en').classList.toggle('active', l === 'en');
+    document.querySelectorAll('[data-ja]').forEach(el => {
+      el.textContent = el.getAttribute('data-' + l);
+    });
+  }
+</script>
+</body>
+</html>
